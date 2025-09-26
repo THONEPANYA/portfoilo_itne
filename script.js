@@ -1,116 +1,152 @@
-        // Typing animation
-        const texts = ['Full Stack Developer', 'UI/UX Designer', 'Problem Solver', 'Creative Thinker'];
-        let textIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        const typingElement = document.getElementById('typingText');
+'use strict';
 
-        function typeText() {
-            const currentText = texts[textIndex];
-            
-            if (isDeleting) {
-                typingElement.textContent = currentText.substring(0, charIndex - 1);
-                charIndex--;
-            } else {
-                typingElement.textContent = currentText.substring(0, charIndex + 1);
-                charIndex++;
-            }
+/* ==========================
+   Typing animation
+========================== */
+const texts = ['Developer', 'Problem Solver', 'Coding'];
+let textIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
 
-            if (!isDeleting && charIndex === currentText.length) {
-                setTimeout(() => isDeleting = true, 2000);
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                textIndex = (textIndex + 1) % texts.length;
-            }
+function typeText() {
+  const typingElement = document.getElementById('typingText');
+  if (!typingElement) return;
 
-            const speed = isDeleting ? 50 : 100;
-            setTimeout(typeText, speed);
-        }
+  const currentText = texts[textIndex];
 
-        // Scroll animations
-        function animateOnScroll() {
-            const elements = document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right');
-            
-            elements.forEach(element => {
-                const elementTop = element.getBoundingClientRect().top;
-                const elementVisible = 150;
-                
-                if (elementTop < window.innerHeight - elementVisible) {
-                    element.classList.add('visible');
-                }
-            });
+  if (isDeleting) {
+    typingElement.textContent = currentText.substring(0, charIndex - 1);
+    charIndex--;
+  } else {
+    typingElement.textContent = currentText.substring(0, charIndex + 1);
+    charIndex++;
+  }
 
-            // Animate skill bars
-            const skillBars = document.querySelectorAll('.skill-bar');
-            skillBars.forEach(bar => {
-                const barTop = bar.getBoundingClientRect().top;
-                if (barTop < window.innerHeight - 150) {
-                    bar.classList.add('animate');
-                }
-            });
-        }
+  if (!isDeleting && charIndex === currentText.length) {
+    setTimeout(() => (isDeleting = true), 2000);
+  } else if (isDeleting && charIndex === 0) {
+    isDeleting = false; // แก้จาก faalse ➜ false
+    textIndex = (textIndex + 1) % texts.length;
+  }
 
-        // Scroll progress indicator
-        function updateScrollIndicator() {
-            const scrollTop = window.pageYOffset;
-            const docHeight = document.body.scrollHeight - window.innerHeight;
-            const scrollPercent = (scrollTop / docHeight) * 100;
-            document.getElementById('scrollIndicator').style.width = scrollPercent + '%';
-        }
+  const speed = isDeleting ? 50 : 100;
+  setTimeout(typeText, speed);
+}
 
-        // Smooth scroll to section
-        function scrollToSection(sectionId) {
-            document.getElementById(sectionId).scrollIntoView({
-                behavior: 'smooth'
-            });
-        }
+/* ==========================
+   Scroll animations
+========================== */
+function animateOnScroll() {
+  const elements = document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right');
+  elements.forEach((el) => {
+    const top = el.getBoundingClientRect().top;
+    if (top < window.innerHeight - 150) el.classList.add('visible');
+  });
 
-        // Contact form submission
-        document.getElementById('contactForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Simple form validation and success message
-            const inputs = this.querySelectorAll('input, textarea');
-            let isValid = true;
-            
-            inputs.forEach(input => {
-                if (!input.value.trim()) {
-                    isValid = false;
-                    input.style.borderColor = '#ef4444';
-                } else {
-                    input.style.borderColor = '#d1d5db';
-                }
-            });
-            
-            if (isValid) {
-                alert('Thank you for your message! I\'ll get back to you soon.');
-                this.reset();
-            } else {
-                alert('Please fill in all fields.');
-            }
-        });
+  // Animate skill bars
+  const skillBars = document.querySelectorAll('.skill-bar');
+  skillBars.forEach((bar) => {
+    const top = bar.getBoundingClientRect().top;
+    if (top < window.innerHeight - 150) bar.classList.add('animate');
+  });
+}
 
-        // Navigation links smooth scroll
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href').substring(1);
-                scrollToSection(targetId);
-            });
-        });
+/* ==========================
+   Scroll progress indicator
+========================== */
+function updateScrollIndicator() {
+  const bar = document.getElementById('scrollIndicator');
+  if (!bar) return;
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const docHeight = document.body.scrollHeight - window.innerHeight;
+  const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  bar.style.width = pct + '%';
+}
 
-        // Initialize animations
-        window.addEventListener('scroll', () => {
-            animateOnScroll();
-            updateScrollIndicator();
-        });
+/* ==========================
+   Smooth scroll to section
+========================== */
+function scrollToSection(sectionId) {
+  const target = document.getElementById(sectionId);
+  if (!target) return;
+  target.scrollIntoView({ behavior: 'smooth' });
+}
+window.scrollToSection = scrollToSection; // ให้ปุ่มใน HTML เรียกใช้ได้
 
-        window.addEventListener('load', () => {
-            typeText();
-            animateOnScroll();
-        });
+/* ==========================
+   Contact form validation
+========================== */
+function setupContactForm() {
+  const form = document.getElementById('contactForm');
+  if (!form) return;
 
-        // Mobile menu toggle (basic implementation)
-        document.getElementById('menuToggle').addEventListener('click', function() {
-            alert('Mobile menu would open here in a full implementation!');
-        });
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const inputs = form.querySelectorAll('input, textarea');
+    let isValid = true;
+
+    inputs.forEach((input) => {
+      if (!input.value.trim()) {
+        isValid = false;
+        input.style.borderColor = '#ef4444';
+      } else {
+        input.style.borderColor = '#d1d5db';
+      }
+    });
+
+    if (isValid) {
+      alert("Thank you for your message! I'll get back to you soon.");
+      form.reset();
+    } else {
+      alert('Please fill in all fields.');
+    }
+  });
+}
+
+/* ==========================
+   Nav links smooth scroll
+========================== */
+function setupNavLinks() {
+  document.querySelectorAll('.nav-link').forEach((link) => {
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      scrollToSection(targetId);
+    });
+  });
+}
+
+/* ==========================
+   Mobile menu toggle (basic)
+========================== */
+function setupMobileMenu() {
+  const toggle = document.getElementById('menuToggle');
+  const menu = document.querySelector('nav .md\\:flex'); // ตัวเมนูหลักที่ซ่อนบน mobile
+  if (!toggle || !menu) return;
+
+  // สร้างสำเนาเมนูสำหรับ mobile ถ้าอยากให้แยกชัดเจน สามารถเพิ่ม container ใหม่ใน HTML ได้
+  toggle.addEventListener('click', () => {
+    // สลับ hidden บนจอเล็ก
+    menu.classList.toggle('hidden');
+  });
+}
+
+/* ==========================
+   Init
+========================== */
+function onScroll() {
+  animateOnScroll();
+  updateScrollIndicator();
+}
+
+// ใช้ defer ใน HTML แล้วจึงสามารถเรียก init ได้ทันที
+(function init() {
+  typeText();
+  animateOnScroll();
+  updateScrollIndicator();
+  setupContactForm();
+  setupNavLinks();
+  setupMobileMenu();
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+})();
